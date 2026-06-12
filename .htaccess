@@ -1,0 +1,4 @@
+# Redirect semua traffic ke public/ folder
+# Diperlukan untuk InfinityFree dan shared hosting
+RewriteEngine On
+RewriteRule ^(.*)$ public/$1 [L]

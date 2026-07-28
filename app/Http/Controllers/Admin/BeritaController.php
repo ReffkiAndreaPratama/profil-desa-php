@@ -3,20 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\HandlesImageUpload;
 use App\Models\Berita;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
+    use HandlesImageUpload;
+
     public function index(Request $request)
     {
         $query = Berita::orderByDesc('tanggal');
         if ($request->search) {
-            $query->where('judul', 'like', '%'.$request->search.'%');
+            $query->where('judul', 'like', '%' . $request->search . '%');
         }
         $berita = $query->paginate(15)->withQueryString();
-        return view('admin.berita.index', compact('berita'));
+
+        return response()
+            ->view('admin.berita.index', compact('berita'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
 
     public function create()
@@ -27,16 +32,18 @@ class BeritaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'judul'    => 'required|string|max:255',
-            'kategori' => 'required|string',
-            'tanggal'  => 'required|date',
-            'penulis'  => 'required|string|max:100',
-            'ringkasan'=> 'required|string',
-            'konten'   => 'required|string',
-            'foto'     => 'nullable|url|max:500',
-            'published'=> 'boolean',
+            'judul'       => 'required|string|max:255',
+            'kategori'    => 'required|string',
+            'tanggal'     => 'required|date',
+            'penulis'     => 'required|string|max:100',
+            'ringkasan'   => 'required|string',
+            'konten'      => 'required|string',
+            'foto'        => 'nullable|string|max:500',
+            'foto_upload' => 'nullable|image|max:2048',
+            'published'   => 'boolean',
         ]);
 
+        $validated['foto']      = $this->handleFoto($request, 'berita');
         $validated['views']     = 0;
         $validated['published'] = $request->boolean('published');
 
@@ -52,17 +59,20 @@ class BeritaController extends Controller
     public function update(Request $request, Berita $berita)
     {
         $validated = $request->validate([
-            'judul'    => 'required|string|max:255',
-            'kategori' => 'required|string',
-            'tanggal'  => 'required|date',
-            'penulis'  => 'required|string|max:100',
-            'ringkasan'=> 'required|string',
-            'konten'   => 'required|string',
-            'foto'     => 'nullable|url|max:500',
-            'published'=> 'boolean',
+            'judul'       => 'required|string|max:255',
+            'kategori'    => 'required|string',
+            'tanggal'     => 'required|date',
+            'penulis'     => 'required|string|max:100',
+            'ringkasan'   => 'required|string',
+            'konten'      => 'required|string',
+            'foto'        => 'nullable|string|max:500',
+            'foto_upload' => 'nullable|image|max:2048',
+            'published'   => 'boolean',
         ]);
 
+        $validated['foto']      = $this->handleFoto($request, 'berita', $berita->foto);
         $validated['published'] = $request->boolean('published');
+
         $berita->update($validated);
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil diperbarui!');
     }
@@ -70,6 +80,8 @@ class BeritaController extends Controller
     public function destroy(Berita $berita)
     {
         $berita->delete();
-        return back()->with('success', 'Berita berhasil dihapus!');
+        return redirect()->route('admin.berita.index')
+            ->with('success', 'Berita berhasil dihapus!')
+            ->withHeaders(['Cache-Control' => 'no-store, no-cache, must-revalidate']);
     }
 }

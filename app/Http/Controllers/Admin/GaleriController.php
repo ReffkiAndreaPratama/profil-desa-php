@@ -3,58 +3,94 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\HandlesImageUpload;
 use App\Models\Galeri;
 use Illuminate\Http\Request;
 
 class GaleriController extends Controller
 {
+    use HandlesImageUpload;
+
     private function formFields(): array
     {
         return [
-            ['name'=>'judul','label'=>'Judul Foto','required'=>true],
-            ['name'=>'kategori','label'=>'Kategori','type'=>'select','options'=>['Kegiatan','Pembangunan','Wisata','Budaya','Lingkungan','Lainnya'],'required'=>true],
-            ['name'=>'foto','label'=>'URL Foto','required'=>true,'placeholder'=>'https://...'],
-            ['name'=>'tanggal','label'=>'Tanggal','type'=>'date','required'=>true],
+            ['name' => 'judul',    'label' => 'Judul Foto', 'required' => true],
+            ['name' => 'kategori', 'label' => 'Kategori',   'type' => 'select', 'required' => true,
+                'options' => ['Kegiatan', 'Pembangunan', 'Wisata', 'Budaya', 'Lingkungan', 'Lainnya']],
+            ['name' => 'tanggal',  'label' => 'Tanggal',    'type' => 'date', 'required' => true],
         ];
     }
 
     public function index()
     {
-        return view('admin.galeri.index', ['galeri' => Galeri::orderByDesc('tanggal')->paginate(20)]);
+        return view('admin.galeri.index', [
+            'galeri' => Galeri::orderByDesc('tanggal')->paginate(20),
+        ]);
     }
 
     public function create()
     {
-        return view('admin.crud.generic_form', [
-            'title'=>'Galeri','item'=>null,
-            'storeRoute'=>'admin.galeri.store','updateRoute'=>'admin.galeri.update','indexRoute'=>'admin.galeri.index',
-            'fields'=>$this->formFields()
-        ]);
+        return view('admin.galeri.form', ['galeri' => null]);
     }
 
     public function store(Request $request)
     {
-        $request->validate(['judul'=>'required','kategori'=>'required','foto'=>'required','tanggal'=>'required|date']);
-        Galeri::create($request->only('judul','kategori','foto','tanggal'));
-        return redirect()->route('admin.galeri.index')->with('success','Foto galeri ditambahkan!');
+        $request->validate([
+            'judul'       => 'required',
+            'kategori'    => 'required',
+            'tanggal'     => 'required|date',
+            'foto'        => 'nullable|string',
+            'foto_upload' => 'nullable|image|max:2048',
+        ]);
+
+        $foto = $this->handleFoto($request, 'galeri');
+        if (!$foto) {
+            return back()->withErrors(['foto' => 'Foto wajib diisi (URL atau upload)'])->withInput();
+        }
+
+        Galeri::create([
+            'judul'    => $request->judul,
+            'kategori' => $request->kategori,
+            'tanggal'  => $request->tanggal,
+            'foto'     => $foto,
+        ]);
+
+        return redirect()->route('admin.galeri.index')->with('success', 'Foto galeri ditambahkan!');
     }
 
     public function edit(Galeri $galeri)
     {
-        return view('admin.crud.generic_form', [
-            'title'=>'Galeri','item'=>$galeri,
-            'storeRoute'=>'admin.galeri.store','updateRoute'=>'admin.galeri.update','indexRoute'=>'admin.galeri.index',
-            'fields'=>$this->formFields()
-        ]);
+        return view('admin.galeri.form', compact('galeri'));
     }
 
     public function update(Request $request, Galeri $galeri)
     {
-        $request->validate(['judul'=>'required','kategori'=>'required','foto'=>'required','tanggal'=>'required|date']);
-        $galeri->update($request->only('judul','kategori','foto','tanggal'));
-        return redirect()->route('admin.galeri.index')->with('success','Foto galeri diperbarui!');
+        $request->validate([
+            'judul'       => 'required',
+            'kategori'    => 'required',
+            'tanggal'     => 'required|date',
+            'foto'        => 'nullable|string',
+            'foto_upload' => 'nullable|image|max:2048',
+        ]);
+
+        $galeri->update([
+            'judul'    => $request->judul,
+            'kategori' => $request->kategori,
+            'tanggal'  => $request->tanggal,
+            'foto'     => $this->handleFoto($request, 'galeri', $galeri->foto),
+        ]);
+
+        return redirect()->route('admin.galeri.index')->with('success', 'Foto galeri diperbarui!');
     }
 
-    public function destroy(Galeri $galeri) { $galeri->delete(); return back()->with('success','Foto dihapus!'); }
-    public function show(Galeri $galeri) { return redirect()->route('admin.galeri.edit', $galeri); }
+    public function destroy(Galeri $galeri)
+    {
+        $galeri->delete();
+        return back()->with('success', 'Foto dihapus!');
+    }
+
+    public function show(Galeri $galeri)
+    {
+        return redirect()->route('admin.galeri.edit', $galeri);
+    }
 }

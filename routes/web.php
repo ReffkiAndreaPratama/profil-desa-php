@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Admin\AuthController;
@@ -11,15 +12,14 @@ use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\PerangkatController;
 use App\Http\Controllers\Admin\AgendaController;
 use App\Http\Controllers\Admin\AspirasiController;
-use App\Http\Controllers\Admin\DokumenController;
 use App\Http\Controllers\Admin\KknAnggotaController;
 use App\Http\Controllers\Admin\KknProkerController;
-use App\Http\Controllers\Admin\BankSampahController;
-use App\Http\Controllers\Admin\LaporanSampahController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\PesanKontakController;
-use App\Http\Controllers\Admin\DataSampahController;
+use App\Http\Controllers\Admin\PetaRumahController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\EmailVerificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,13 +38,12 @@ Route::get('/kontak', [PublicController::class, 'kontak'])->name('kontak');
 Route::post('/kontak', [PublicController::class, 'kontakSubmit'])->name('kontak.submit');
 Route::get('/aspirasi', [PublicController::class, 'aspirasi'])->name('aspirasi');
 Route::post('/aspirasi', [PublicController::class, 'aspirasiSubmit'])->name('aspirasi.submit');
-Route::get('/dokumen', [PublicController::class, 'dokumen'])->name('dokumen');
 Route::get('/data', [PublicController::class, 'data'])->name('data');
 Route::get('/peta', [PublicController::class, 'peta'])->name('peta');
+Route::get('/peta/rumah-geojson', [PublicController::class, 'petaRumahGeojson'])->name('peta.rumah.geojson');
 Route::get('/kalender', [PublicController::class, 'kalender'])->name('kalender');
-Route::get('/sitara', [PublicController::class, 'sitara'])->name('sitara');
 Route::get('/kkn', [PublicController::class, 'kkn'])->name('kkn');
-Route::post('/laporan-sampah', [PublicController::class, 'laporanSampahSubmit'])->name('laporan.submit');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -58,16 +57,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->middleware(['signed'])->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware(['throttle:6,1'])->name('verification.send');
+
     // Protected admin routes
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'verified.email'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('users', UserController::class);
+        });
+
         // Berita
-        Route::resource('berita', BeritaController::class);
+        Route::resource('berita', BeritaController::class)
+            ->parameters(['berita' => 'berita']);
 
         // Wisata
-        Route::resource('wisata', WisataController::class);
+        Route::resource('wisata', WisataController::class)
+            ->parameters(['wisata' => 'wisata']);
 
         // UMKM
         Route::resource('umkm', UmkmController::class);
@@ -85,19 +94,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('aspirasi', AspirasiController::class);
         Route::patch('aspirasi/{aspirasi}/status', [AspirasiController::class, 'updateStatus'])->name('aspirasi.status');
 
-        // Dokumen
-        Route::resource('dokumen', DokumenController::class);
-
         // KKN
         Route::resource('kkn-anggota', KknAnggotaController::class);
         Route::resource('kkn-proker', KknProkerController::class);
-
-        // Bank Sampah
-        Route::resource('bank-sampah', BankSampahController::class);
-
-        // Laporan Sampah
-        Route::resource('laporan-sampah', LaporanSampahController::class);
-        Route::patch('laporan-sampah/{laporan}/status', [LaporanSampahController::class, 'updateStatus'])->name('laporan-sampah.status');
 
         // Statistik
         Route::resource('statistik', StatistikController::class);
@@ -108,15 +107,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Pesan Kontak
         Route::resource('pesan-kontak', PesanKontakController::class);
-        Route::patch('pesan-kontak/{pesan}/read', [PesanKontakController::class, 'markRead'])->name('pesan-kontak.read');
+        Route::patch('pesan-kontak/{pesanKontak}/read', [PesanKontakController::class, 'markRead'])->name('pesan-kontak.read');
 
-        // Data Sampah Bulanan
-        Route::resource('data-sampah', DataSampahController::class);
+        // Peta Rumah
+        Route::resource('peta-rumah', PetaRumahController::class);
+        Route::get('peta-rumah-geojson', [PetaRumahController::class, 'geojson'])->name('peta-rumah.geojson');
     });
 });
 
 // Install route - untuk setup awal di shared hosting (hapus setelah dipakai)
-Route::get('/setup-install', function () {
+Route::get('/setup-install', function (\Illuminate\Http\Request $request) {
+    // Validasi parameter key untuk mengamankan proses setup
+    $expectedKey = config('auth.admin.setup_key');
+    if (!$expectedKey || $request->query('key') !== $expectedKey) {
+        abort(403, 'Akses ditolak. Silakan sertakan query parameter key yang valid.');
+    }
+
     if (app()->environment('production') && file_exists(storage_path('installed'))) {
         abort(404);
     }
@@ -129,3 +135,62 @@ Route::get('/setup-install', function () {
         return '<h1 style="font-family:sans-serif;color:red">❌ Error: '.$e->getMessage().'</h1>';
     }
 });
+
+// Route khusus untuk menjalankan migrasi baru di hosting tanpa reset data seeder
+Route::get('/run-migration', function (\Illuminate\Http\Request $request) {
+    $expectedKey = config('auth.admin.setup_key');
+    if (!$expectedKey || $request->query('key') !== $expectedKey) {
+        abort(403, 'Akses ditolak. Silakan sertakan query parameter key yang valid.');
+    }
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return '<h1 style="font-family:sans-serif;color:green">✅ Update migrasi database berhasil!</h1>';
+    } catch (\Exception $e) {
+        return '<h1 style="font-family:sans-serif;color:red">❌ Error: '.$e->getMessage().'</h1>';
+    }
+});
+
+// Route untuk memindahkan/menduplikasi file upload ke folder public jika tidak ada symlink
+Route::get('/fix-storage', function () {
+    $storageLink = public_path('storage');
+    $src = storage_path('app/public/uploads');
+    $dst = public_path('storage/uploads');
+
+    // Hapus jika ada link/symlink atau file rusak dengan nama 'storage' di folder public
+    if (is_link($storageLink) || (!is_dir($storageLink) && file_exists($storageLink))) {
+        @unlink($storageLink);
+        @rmdir($storageLink);
+    }
+
+    // Buat folder fisik public/storage jika belum ada
+    if (!file_exists($storageLink)) {
+        @mkdir($storageLink, 0777, true);
+    }
+
+    if (!file_exists($src)) {
+        return 'Folder ' . $src . ' tidak ditemukan. Silakan upload gambar baru di admin panel, atau buat folder tersebut.';
+    }
+
+    if (!file_exists($dst)) {
+        @mkdir($dst, 0777, true);
+    }
+
+    $copyFolder = function ($src, $dst) use (&$copyFolder) {
+        $dir = opendir($src);
+        @mkdir($dst, 0777, true);
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($src . '/' . $file)) {
+                    $copyFolder($src . '/' . $file, $dst . '/' . $file);
+                } else {
+                    copy($src . '/' . $file, $dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
+    };
+
+    $copyFolder($src, $dst);
+    return '✅ Berhasil memperbaiki storage! File upload berhasil disalin ke folder fisik public/storage/uploads!';
+});
+

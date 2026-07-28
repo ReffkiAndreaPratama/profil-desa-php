@@ -96,6 +96,7 @@ return new class extends Migration
             $table->string('posisi');
             $table->text('foto')->nullable();
             $table->string('nim')->nullable();
+            $table->string('instagram')->nullable();
             $table->timestamps();
         });
 
@@ -104,7 +105,10 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('kategori');
+            $table->string('jenis')->default('Program Kerja');
             $table->text('deskripsi');
+            $table->text('tujuan')->nullable();
+            $table->text('manfaat')->nullable();
             $table->string('status')->default('planned');
             $table->integer('progress')->default(0);
             $table->string('target')->nullable();
@@ -140,30 +144,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Laporan Sampah
-        Schema::create('laporan_sampah', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('lokasi');
-            $table->text('deskripsi');
-            $table->text('foto')->nullable();
-            $table->string('status')->default('diterima');
-            $table->text('catatan_admin')->nullable();
-            $table->timestamps();
-        });
-
-        // Bank Sampah Nasabah
-        Schema::create('bank_sampah_nasabah', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('nik')->nullable();
-            $table->string('alamat')->nullable();
-            $table->string('no_hp')->nullable();
-            $table->integer('poin')->default(0);
-            $table->boolean('aktif')->default(true);
-            $table->timestamps();
-        });
-
+       
         // Dokumen
         Schema::create('dokumen', function (Blueprint $table) {
             $table->id();
@@ -196,16 +177,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Data Sampah Bulanan
-        Schema::create('data_sampah', function (Blueprint $table) {
-            $table->id();
-            $table->string('bulan'); // format: 2025-06
-            $table->integer('total')->default(0);
-            $table->integer('organik')->default(0);
-            $table->integer('anorganik')->default(0);
-            $table->integer('b3')->default(0);
-            $table->timestamps();
-        });
 
         // Pesan Kontak
         Schema::create('pesan_kontak', function (Blueprint $table) {
@@ -223,8 +194,8 @@ return new class extends Migration
     public function down(): void
     {
         $tables = [
-            'pesan_kontak','data_sampah','statistik_desa','pengaturan',
-            'dokumen','bank_sampah_nasabah','laporan_sampah','aspirasi',
+            'pesan_kontak','statistik_desa','pengaturan',
+            'dokumen','aspirasi',
             'agenda','program_kerja','anggota_kkn','perangkat_desa',
             'galeri','umkm','wisata','berita','users',
         ];

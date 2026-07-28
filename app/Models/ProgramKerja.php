@@ -10,6 +10,7 @@ class ProgramKerja extends Model
     protected $fillable = [
         'nama','kategori','deskripsi','status','progress',
         'target','output','tanggal_mulai','tanggal_selesai','pic','icon',
+        'jenis','tujuan','manfaat',
     ];
     protected $casts = [
         'progress'      => 'integer',

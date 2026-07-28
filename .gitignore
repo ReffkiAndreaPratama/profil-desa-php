@@ -1,6 +1,7 @@
 /vendor
 /node_modules
-/.env
+.env
+.env.*
 /storage/*.key
 /storage/framework/cache/data/*
 /storage/framework/sessions/*

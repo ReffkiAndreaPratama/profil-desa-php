@@ -1,7 +1,7 @@
 {
     "name": "desa/portal-talang-marap",
     "type": "project",
-    "description": "Portal Digital Desa Talang Marap",
+    "description": "Smart Village Talang Marap",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

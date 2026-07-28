@@ -1,0 +1,115 @@
+/* ============================================================
+   Smart Village Talang Marap — Global Stylesheet
+   ============================================================ */
+
+/* ── Base ──────────────────────────────────────────────────── */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFDF7;
+    transition: background-color .3s, color .3s;
+}
+
+/* ── Container ─────────────────────────────────────────────── */
+.container-custom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+@media (max-width: 640px) {
+    .container-custom { padding: 0 16px; }
+}
+
+/* ── Brutal Card ───────────────────────────────────────────── */
+.brutal-card {
+    border: 4px solid #212121;
+    border-radius: 20px;
+    box-shadow: 6px 6px 0 #212121;
+    background: white;
+    transition: all .2s;
+}
+.brutal-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 #212121;
+}
+
+/* ── Brutal Button ─────────────────────────────────────────── */
+.brutal-btn {
+    border: 3px solid #212121;
+    box-shadow: 4px 4px 0 #212121;
+    font-weight: 700;
+    transition: all .15s;
+    cursor: pointer;
+}
+.brutal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #212121;
+}
+.brutal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #212121;
+}
+
+/* ── Gradients & Text ──────────────────────────────────────── */
+.gradient-green {
+    background: linear-gradient(135deg, #2E7D32 0%, #43A047 50%, #66BB6A 100%);
+}
+.text-gradient {
+    background: linear-gradient(135deg, #2E7D32, #66BB6A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Marquee ───────────────────────────────────────────────── */
+.marquee-wrapper { overflow: hidden; white-space: nowrap; }
+.marquee-content {
+    display: inline-block;
+    animation: marquee 30s linear infinite;
+}
+.marquee-content:hover { animation-play-state: paused; }
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   ============================================================ */
+.dark body                        { background-color: #121212; color: #e0e0e0; }
+.dark .brutal-card                { background: #1e1e1e; border-color: #444; box-shadow: 6px 6px 0 #444; color: #e0e0e0; }
+.dark .brutal-card:hover          { box-shadow: 9px 9px 0 #444; }
+.dark .brutal-btn                 { border-color: #555; box-shadow: 4px 4px 0 #555; }
+.dark .brutal-btn:hover           { box-shadow: 6px 6px 0 #555; }
+
+/* Navbar scroll background in dark mode */
+.dark #navbar.scrolled            { background: rgba(18, 18, 18, 0.95) !important; }
+
+/* Tailwind utility overrides for dark mode */
+.dark .bg-\[\#FFFDF7\]           { background-color: #121212; }
+.dark .bg-\[\#F1F8E9\]           { background-color: #181f18; }
+.dark .bg-white                   { background-color: #1e1e1e; }
+.dark .bg-\[\#E8F5E9\]           { background-color: #1a2e1a; }
+.dark .text-\[\#212121\]         { color: #e0e0e0; }
+.dark .text-gray-500              { color: #9ca3af; }
+.dark .text-gray-600              { color: #9ca3af; }
+.dark .text-gray-400              { color: #98a2b3; }
+.dark .text-gray-300              { color: #d1d5db; }
+.dark .border-gray-100            { border-color: #333; }
+.dark .border-gray-200            { border-color: #4b5563; }
+.dark input, .dark textarea, .dark select {
+    background-color: #1f2937;
+    color: #f3f4f6;
+    border-color: #4b5563;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+    color: #9ca3af;
+}
+.dark table thead th,
+.dark table tbody td {
+    border-color: #374151;
+}
+.dark .text-white\/80,
+.dark .text-white\/60,
+.dark .text-white\/70 {
+    color: rgba(255,255,255,0.82);
+}

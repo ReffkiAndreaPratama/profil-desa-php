@@ -15,9 +15,7 @@ use App\Models\ProgramKerja;
 use App\Models\Agenda;
 use App\Models\Dokumen;
 use App\Models\StatistikDesa;
-use App\Models\DataSampah;
 use App\Models\Pengaturan;
-use App\Models\BankSampahNasabah;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,11 +23,13 @@ class DatabaseSeeder extends Seeder
     {
         // Admin user
         User::updateOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@desatalangmarap.id')],
+            ['email' => config('auth.admin.email')],
             [
-                'name'     => 'Admin Desa',
-                'email'    => env('ADMIN_EMAIL', 'admin@desatalangmarap.id'),
-                'password' => Hash::make(env('ADMIN_PASSWORD', 'admin123')),
+                'name'              => 'Admin Desa',
+                'email'             => config('auth.admin.email'),
+                'password'          => Hash::make(config('auth.admin.password')),
+                'role'              => 'admin',
+                'email_verified_at' => now(),
             ]
         );
 
@@ -40,19 +40,58 @@ class DatabaseSeeder extends Seeder
             'kabupaten'        => 'Kabupaten Kaur',
             'provinsi'         => 'Provinsi Bengkulu',
             'tagline'          => 'Mengenal Desa, Mengelola Data, Membangun Masa Depan',
-            'kepala_desa'      => 'Bapak Sumarno',
-            'whatsapp'         => '6281234567890',
-            'email'            => 'desatalangmarap@gmail.com',
+            'kepala_desa'      => 'Midarman',
+            'whatsapp'         => '6282350257688',
+            'email'            => 'desatalangmarap1@gmail.com',
             'alamat'           => 'Jl. Raya Talang Marap No. 1, Kec. Kelam Tengah, Kab. Kaur',
             'jam_operasional'  => 'Senin - Jumat: 08.00 - 16.00 WIB',
             'instagram'        => 'desatalangmarap',
             'facebook'         => 'Desa Talang Marap',
             'tiktok'           => '@desatalangmarap',
-            'youtube'          => 'Portal Desa Talang Marap',
-            'jumlah_penduduk'  => '1847',
-            'jumlah_kk'        => '512',
-            'luas_wilayah'     => '24.5 km²',
-            'jumlah_dusun'     => '4',
+            'youtube'          => 'Smart Village Talang Marap',
+            'jumlah_penduduk'  => '648',
+            'jumlah_kk'        => '211',
+            'luas_wilayah'     => '4610 Ha',
+            'jumlah_dusun'     => '2',
+            'maps_desa'        => 'https://www.google.com/maps?q=-4.35,103.12',
+            'koordinat_desa'   => '-4.35, 103.12',
+            'visi'             => 'MENINGKATKAN TATA KELOLA PEMERINTAHAN DESA YANG BAIK DAN BERSIH GUNA MEWUJUDKAN DESA TALANG MARAP YANG ADIL, MAKMUR, SEJAHTERA DAN BERDASARKAN MUSYAWARAH MUFAKAT.',
+            'visi_deskripsi'   => 'Visi adalah suatu gambaran yang menantang tentang keadaan masa depan yang diinginkan dengan melihat potensi dan kebutuhan desa. Penyusunan visi Desa Talang Marap ini dilakukan dengan pendekatan partisipatif, melibatkan pihak-pihak yang berkepentingan di Desa Talang Marap seperti Pemerintah Desa, BPD, Tokoh Masyarakat, Tokoh Agama, lembaga masyarakat desa dan masyarakat desa pada umumnya.\n\nPertimbangan kondisi eksternal di desa seperti satuan kerja wilayah pembangunan di Kecamatan Kelam Tengah mempunyai titik berat sektor infrastruktur, maka berdasarkan pertimbangan di atas visi Desa Talang Marap yaitu:',
+            'misi'             => "Mewujudkan pemerintah Desa yang tertib, aman, dan transparan\nMewujudkan pembangunan yang merata baik fisik dan pembangunan SDM\nMewujudkan perekonomian dan kesejahteraan masyarakat\nMewujudkan masyarakat yang berakhlak dan religious\nMewujudkan Masyarakat sehat\nMengaktifkan kegiatan kepemudaan\nMewujudkan kegiatan yang jujur, adil dan transparan",
+            'misi_deskripsi'   => 'Selain penyusunan visi juga telah ditetapkan misi-misi yang memuat suatu pernyataan yang harus dilaksanakan oleh warga Desa Talang Marap agar tercapainya visi Desa tersebut. Visi berada diatas misi. Pernyataan visi kemudian dijabarkan kedalam misi agar dapat dioperasionalkan/dikerjakan. Sebagaimana penyusunannya menggunakan pendekatan partisipatif dan pertimbangan potensi dan kebutuhan Desa Talang Marap sebagaimana proses yang dilakukan maka misi Desa Talang Marap yaitu:',
+            'sejarah'          => json_encode([
+                ['tahun' => '1912', 'judul' => 'Zaman Depati Kaemajis', 'desc' => 'Talang Marap diambil dari keyakinan masyarakat terhadap Dewa Pelindung pada tahun 1912. Kepemimpinan dipegang oleh Depati Kaemajis (1912-1965).'],
+                ['tahun' => '1965', 'judul' => 'Zaman Depati Buyung Alinap', 'desc' => 'Masa kepemimpinan dilanjutkan oleh Depati Buyung Alinap (1965-1972).'],
+                ['tahun' => '1972', 'judul' => 'Sistem Kepala Desa Pertama', 'desc' => 'Ditiadakannya wilayah Pasirah oleh Pemerintah RI. Jabatan Depati diubah menjadi Kepala Desa, dijabat pertama oleh Idris Ali (1972-1988).'],
+                ['tahun' => '1988', 'judul' => 'Masa Jabatan Irsanudin', 'desc' => 'Kepala Desa Irsanudin menjabat dari 1988 hingga 1999. Sempat diisi oleh Pjs. Yaswan dari Kecamatan Kaur Utara karena kekosongan.'],
+                ['tahun' => '2000', 'judul' => 'Kepemimpinan Justan', 'desc' => 'Justan memimpin desa hasil pemilihan langsung masyarakat (2000-2006).'],
+                ['tahun' => '2005', 'judul' => 'Pemekaran Desa', 'desc' => 'Pemekaran Desa Talang Marap dengan Desa Pagar Dewa, Kecamatan Kelam Tengah.'],
+                ['tahun' => '2007', 'judul' => 'Kepemimpinan Disirmin', 'desc' => 'Disirmin menjabat dari 2007 hingga 2013.'],
+                ['tahun' => '2009', 'judul' => 'Pemekaran Kecamatan', 'desc' => 'Kabupaten Kaur memisahkan diri dari Bengkulu Selatan, memicu pemekaran Kecamatan Kelam Tengah, sehingga secara definitif terbentuk Desa Talang Marap.'],
+                ['tahun' => '2016', 'judul' => 'Kepemimpinan Janusi A. Hamid', 'desc' => 'Janusi A. Hamid terpilih secara langsung oleh masyarakat sebagai Kepala Desa periode 2016-2021.'],
+                ['tahun' => '2022', 'judul' => 'Kepemimpinan Midarman', 'desc' => 'Midarman menjabat sebagai Kepala Desa terpilih secara langsung untuk masa jabatan 2022 sampai dengan 2028.'],
+            ]),
+            'sejarah_narasi'   => "Desa Talang Marap merupakan salah satu Desa dalam Wilayah Administrasi Kecamatan Kelam Tengah yang terletak 3 KM dari sebelah Barat Kecamatan Kelam Tengah yang merupakan Desa hasil pemekaran dengan Desa Pagar Dewa Kecamatan Kelam Tengah Kabupaten Kaur pada tahun 2005.\n\nDiawal zaman penjajah Belanda sementara untuk kedudukan Kepemimpinan Desa atau Dusun dipimpin oleh Depati. Terdiri dari 2 Dusun yaitu Dusun Luuk Bingkok dan Dusun Tanjung Bunga. Pada masa Zaman kepemimpinan Depati Daerah Pagar Dewa masih dalam Zaman peperangan atau gerombolan, setelah selesai masa peperangan kedua Dusun tersebut bergabung menjadi sebuah kelompok dan terbentuk sebuah Desa yang dinamakan Desa Pagar Dewa.\n\nDesa Talang Marap diambil dari keyakinan Masyarakat terhadap dewa, maka dinamakan Talang Marap atau Dewa Pelindung pada tahun 1912. Yang pada masa itu untuk kepemimpinan dipegang oleh Depati Kaemajis, menjabat sebagai Depati dari tahun 1912 sampai dengan 1965.\n\nPada tahun selanjutnya dari tahun 1965 sampai dengan 1972 dipimpin oleh Depati Buyung Alinap, selepas tahun 1972 dengan peraturan baru yang dibuat oleh Pemerintah Republik Indonesia yang mentiadakan Wilayah Pasirah sebagai atasan Depati maka Depati menjadi Kepala Desa saat itu menjabat pertama dari tahun 1972 sampai dengan 1988 dipimpin oleh seorang Kepala Desa yang bernama Idris Ali, dan setelah habis masa jabatan Kepala Desa Talang Marap Idris Ali, digantikan oleh Irsanudin dari tahun 1988 sampai dengan tahun 1999. Pada akhir masa jabatan Irsanudin terjadi kekosongan kepemimpinan karena menunggu proses pemilihan kembali Kepala Desa sehingga kepemimpinan di Desa Talang Marap diambil alih oleh Kecamatan Kaur Utara yang bernama Yaswan.\n\nKemudian dari tahun 2000 sampai dengan Tahun 2006 Desa Pagar Dewa dipimpin oleh Justan, Kepemimpinan Justan hasil dari pemilihan Masyarakat Desa secara langsung. Setelah habis masa jabatan Kepala Desa Pagar Dewa Justan digantikan oleh Disirmin dari Tahun 2007 sampai dengan Tahun 2013. Pada masa pertengahan Kepala Desa Disirmin Tahun 2009 disaat Kabupaten Kaur memisahkan diri dari Kabupaten Bengkulu Selatan banyak pemekaran Kecamatan di Wilayah Kecamatan Kelam Tengah, sehingga terbentuklah Desa Talang Marap.\n\nSetelah terbentuknya Desa Talang Marap maka terpilih pemimpin desa atau Kepala Desa Talang Marap adalah Janusi A. Hamid dari tahun 2016 sampai dengan Tahun 2021 yang terpilih dari pemilihan Kepala Desa Talang Marap secara langsung oleh Masyarakat.\n\nPemimpin Desa atau Kepala Desa Talang Marap adalah Midarman. Dia terpilih dari pemilihan Kepala Desa Talang Marap secara langsung oleh Masyarakat. Midarman menjabat Kepala Desa dari tahun 2022 sampai tahun 2028.",
+            'geografi_batas_utara'   => 'Desa Talang Tais',
+            'geografi_batas_selatan' => 'Desa Pagar Dewa',
+            'geografi_batas_barat'   => 'Desa Curup Air Putih',
+            'geografi_batas_timur'   => 'Seranjangan Besar',
+            'geografi_topografi'     => 'Secara umum keadaan Topografi Desa Talang Marap adalah merupakan daerah dataran rendah bergelombang.',
+            'geografi_iklim'         => 'Iklim Desa Talang Marap sebagaimana desa-desa lain di wilayah Indonesia mempunyai iklim kemarau dan penghujan. Hal ini mempunyai pengaruh langsung terhadap pola tanam yang ada di Desa Talang Marap Kecamatan Kelam Tengah Kabupaten Kaur.',
+            'geografi_luas_total'       => '6000',
+            'geografi_luas_pemukiman'   => '1000',
+            'geografi_luas_persawahan'  => '60',
+            'geografi_luas_perkebunan'  => '1300',
+            'geografi_luas_ladang'      => '1250',
+            'geografi_luas_lainnya'     => '1000',
+            'geografi_keluarga_miskin'  => '86',
+            'pekerjaan'        => json_encode([
+                ['label' => 'Petani', 'value' => 320],
+                ['label' => 'Pelajar/Mahasiswa', 'value' => 120],
+                ['label' => 'Ibu Rumah Tangga', 'value' => 110],
+                ['label' => 'Swasta', 'value' => 60],
+                ['label' => 'Pedagang', 'value' => 38],
+            ]),
         ];
         foreach ($settings as $key => $value) {
             Pengaturan::updateOrCreate(['key' => $key], ['value' => $value]);
@@ -62,7 +101,6 @@ class DatabaseSeeder extends Seeder
         Berita::insert([
             ['judul'=>'Musyawarah Desa Penyusunan RPJMDes 2025-2031','kategori'=>'Pemerintahan','tanggal'=>'2025-06-01','penulis'=>'Admin Desa','foto'=>'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600','ringkasan'=>'Desa Talang Marap menggelar musyawarah desa untuk penyusunan RPJMDes periode 2025-2031.','konten'=>'Musyawarah desa yang dihadiri oleh seluruh perangkat desa, BPD, tokoh masyarakat, dan perwakilan warga ini bertujuan untuk menyusun RPJMDes yang akan menjadi acuan pembangunan desa selama 6 tahun ke depan.','views'=>234,'published'=>true,'created_at'=>now(),'updated_at'=>now()],
             ['judul'=>'Tim KKN Periode 108 Kelompok 146 Resmi Bertugas','kategori'=>'KKN','tanggal'=>'2025-06-05','penulis'=>'Tim KKN','foto'=>'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600','ringkasan'=>'Mahasiswa KKN Universitas Bengkulu Periode 108 Kelompok 146 resmi memulai pengabdian mereka di Desa Talang Marap.','konten'=>'Sebanyak 10 mahasiswa dari berbagai fakultas di Universitas Bengkulu siap mengabdi dan berkontribusi dalam pembangunan Desa Talang Marap selama 40 hari ke depan.','views'=>412,'published'=>true,'created_at'=>now(),'updated_at'=>now()],
-            ['judul'=>'Launching Program SiTARA - Sistem Informasi Sampah','kategori'=>'Lingkungan','tanggal'=>'2025-06-08','penulis'=>'Tim KKN','foto'=>'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600','ringkasan'=>'Program digitalisasi pengelolaan sampah SiTARA resmi diluncurkan sebagai inovasi KKN untuk desa.','konten'=>'SiTARA hadir sebagai solusi digital pengelolaan sampah yang terintegrasi, mencakup bank sampah digital, jadwal pengangkutan, dan edukasi lingkungan bagi warga.','views'=>389,'published'=>true,'created_at'=>now(),'updated_at'=>now()],
             ['judul'=>'Festival Panen Raya Desa Talang Marap 2025','kategori'=>'Pertanian','tanggal'=>'2025-05-20','penulis'=>'Admin Desa','foto'=>'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600','ringkasan'=>'Warga Desa Talang Marap merayakan panen raya dengan festival budaya dan pameran hasil pertanian.','konten'=>'Festival panen raya menjadi momen penting bagi warga untuk bersyukur atas hasil bumi dan mempererat tali silaturahmi antar warga desa.','views'=>521,'published'=>true,'created_at'=>now(),'updated_at'=>now()],
             ['judul'=>'Pelatihan Digital Marketing UMKM','kategori'=>'UMKM','tanggal'=>'2025-06-12','penulis'=>'Tim KKN','foto'=>'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600','ringkasan'=>'KKN menggelar pelatihan digital marketing untuk pelaku UMKM agar bisa berjualan secara online.','konten'=>'Pelatihan ini mencakup cara membuat toko online, penggunaan media sosial untuk promosi, fotografi produk, dan cara bergabung di marketplace.','views'=>298,'published'=>true,'created_at'=>now(),'updated_at'=>now()],
         ]);
@@ -87,31 +125,29 @@ class DatabaseSeeder extends Seeder
 
         // Perangkat Desa
         PerangkatDesa::insert([
-            ['jabatan'=>'Kepala Desa','nama'=>'Sumarno','foto'=>'https://ui-avatars.com/api/?name=Sumarno&background=2E7D32&color=fff&size=200','kontak'=>'081234567890','urutan'=>1,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Kepala Desa','nama'=>'Midarman','foto'=>'https://ui-avatars.com/api/?name=Midarman&background=2E7D32&color=fff&size=200','kontak'=>'081234567890','urutan'=>1,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Sekretaris Desa','nama'=>'Dewi Lestari','foto'=>'https://ui-avatars.com/api/?name=Dewi+Lestari&background=43A047&color=fff&size=200','kontak'=>'081234567891','urutan'=>2,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Bendahara Desa','nama'=>'Andi Kurniawan','foto'=>'https://ui-avatars.com/api/?name=Andi+Kurniawan&background=66BB6A&color=fff&size=200','kontak'=>'081234567892','urutan'=>3,'created_at'=>now(),'updated_at'=>now()],
-            ['jabatan'=>'Kepala Seksi Pemerintahan','nama'=>'Siti Rahayu','foto'=>'https://ui-avatars.com/api/?name=Siti+Rahayu&background=2E7D32&color=fff&size=200','kontak'=>'081234567893','urutan'=>4,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Kepala Seksi Pemerintahan','nama'=>'Tresia Aprianti','foto'=>'https://ui-avatars.com/api/?name=Tresia+Aprianti&background=2E7D32&color=fff&size=200','kontak'=>'081234567893','urutan'=>4,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Kepala Seksi Pembangunan','nama'=>'Budi Santoso','foto'=>'https://ui-avatars.com/api/?name=Budi+Santoso&background=43A047&color=fff&size=200','kontak'=>'081234567894','urutan'=>5,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Kepala Seksi Kemasyarakatan','nama'=>'Rini Wulandari','foto'=>'https://ui-avatars.com/api/?name=Rini+Wulandari&background=81C784&color=fff&size=200','kontak'=>'081234567895','urutan'=>6,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Kepala Dusun I','nama'=>'Hendra Putra','foto'=>'https://ui-avatars.com/api/?name=Hendra+Putra&background=2E7D32&color=fff&size=200','kontak'=>'081234567896','urutan'=>7,'created_at'=>now(),'updated_at'=>now()],
             ['jabatan'=>'Kepala Dusun II','nama'=>'Yeni Marlina','foto'=>'https://ui-avatars.com/api/?name=Yeni+Marlina&background=43A047&color=fff&size=200','kontak'=>'081234567897','urutan'=>8,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Ketua BPD','nama'=>'Hedi Satrio, SH','foto'=>'https://ui-avatars.com/api/?name=Hedi+Satrio&background=2E7D32&color=fff&size=200','kontak'=>'','urutan'=>9,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Wakil Ketua BPD','nama'=>'Tetap','foto'=>'https://ui-avatars.com/api/?name=Tetap&background=43A047&color=fff&size=200','kontak'=>'','urutan'=>10,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Sekretaris BPD','nama'=>'Kamli','foto'=>'https://ui-avatars.com/api/?name=Kamli&background=66BB6A&color=fff&size=200','kontak'=>'','urutan'=>11,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Anggota BPD','nama'=>'Witra Habibi','foto'=>'https://ui-avatars.com/api/?name=Witra+Habibi&background=81C784&color=fff&size=200','kontak'=>'','urutan'=>12,'created_at'=>now(),'updated_at'=>now()],
+            ['jabatan'=>'Anggota BPD','nama'=>'Eva Pornamei','foto'=>'https://ui-avatars.com/api/?name=Eva+Pornamei&background=2E7D32&color=fff&size=200','kontak'=>'','urutan'=>13,'created_at'=>now(),'updated_at'=>now()],
         ]);
 
         // Statistik Desa
         StatistikDesa::insert([
-            ['tahun'=>2020,'penduduk'=>1680,'kk'=>467,'laki_laki'=>840,'perempuan'=>840,'umkm'=>18,'created_at'=>now(),'updated_at'=>now()],
-            ['tahun'=>2021,'penduduk'=>1710,'kk'=>475,'laki_laki'=>855,'perempuan'=>855,'umkm'=>21,'created_at'=>now(),'updated_at'=>now()],
-            ['tahun'=>2022,'penduduk'=>1748,'kk'=>486,'laki_laki'=>874,'perempuan'=>874,'umkm'=>25,'created_at'=>now(),'updated_at'=>now()],
-            ['tahun'=>2023,'penduduk'=>1790,'kk'=>498,'laki_laki'=>895,'perempuan'=>895,'umkm'=>28,'created_at'=>now(),'updated_at'=>now()],
-            ['tahun'=>2024,'penduduk'=>1820,'kk'=>507,'laki_laki'=>910,'perempuan'=>910,'umkm'=>30,'created_at'=>now(),'updated_at'=>now()],
-            ['tahun'=>2025,'penduduk'=>1847,'kk'=>512,'laki_laki'=>921,'perempuan'=>926,'umkm'=>32,'created_at'=>now(),'updated_at'=>now()],
-        ]);
-
-        // Data Sampah
-        DataSampah::insert([
-            ['bulan'=>'2025-06','total'=>2840,'organik'=>1704,'anorganik'=>994,'b3'=>142,'created_at'=>now(),'updated_at'=>now()],
-            ['bulan'=>'2025-05','total'=>2680,'organik'=>1608,'anorganik'=>938,'b3'=>134,'created_at'=>now(),'updated_at'=>now()],
-            ['bulan'=>'2025-04','total'=>2520,'organik'=>1512,'anorganik'=>882,'b3'=>126,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2020,'penduduk'=>600,'kk'=>190,'laki_laki'=>300,'perempuan'=>300,'umkm'=>12,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2021,'penduduk'=>610,'kk'=>194,'laki_laki'=>305,'perempuan'=>305,'umkm'=>14,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2022,'penduduk'=>620,'kk'=>198,'laki_laki'=>310,'perempuan'=>310,'umkm'=>15,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2023,'penduduk'=>630,'kk'=>202,'laki_laki'=>315,'perempuan'=>315,'umkm'=>17,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2024,'penduduk'=>640,'kk'=>207,'laki_laki'=>320,'perempuan'=>320,'umkm'=>19,'created_at'=>now(),'updated_at'=>now()],
+            ['tahun'=>2025,'penduduk'=>648,'kk'=>211,'laki_laki'=>324,'perempuan'=>324,'umkm'=>20,'created_at'=>now(),'updated_at'=>now()],
         ]);
 
         // Galeri
@@ -132,6 +168,162 @@ class DatabaseSeeder extends Seeder
             ['judul'=>'Lomba 17 Agustus','tanggal'=>'2025-08-17','jam'=>'07.00 WIB','lokasi'=>'Lapangan Desa','kategori'=>'Sosial','deskripsi'=>null,'created_at'=>now(),'updated_at'=>now()],
         ]);
 
+        // Program Kerja & Kegiatan KKN
+        ProgramKerja::insert([
+            // Program Kerja
+            [
+                'nama' => 'Sosialisasi di Sekolah tentang anti bullying',
+                'kategori' => 'Pendidikan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Kegiatan edukasi mengenai anti bullying di lingkungan sekolah berupa sosialisasi dan pemasangan poster anti bullying di lingkungan sekolah SDN 20 Kaur.',
+                'tujuan' => 'Menanamkan kesadaran pada siswa tentang apa itu bullying dan bentuk-bentuknya. Siswa dapat saling menyayangi dan membiasakan perilaku menghargai sesama teman.',
+                'manfaat' => 'Meningkatkan pengetahuan dan kepedulian pada siswa yang lebih mampu mengenali ketika mereka atau temannya menjadi korban, mampu merespon dengan tepat serta menumbuhkan empati untuk saling melindungi.',
+                'target' => 'Siswa SDN 20 Kaur',
+                'output' => 'Poster dan pemahaman anti bullying',
+                'status' => 'ongoing',
+                'progress' => 80,
+                'icon' => '🏫',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Pojok Digital Desa',
+                'kategori' => 'Digitalisasi',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan infografis yang didalamnya termuat barcode yang dapat di scan berisi mengenai pengumpulan dan penyusunan data desa yang meliputi profil, berita, wisata, UMKM Desa Talang Marap. Sasaran program ini adalah Pemerintah Desa Talang Marap.',
+                'tujuan' => 'Mendokumentasikan informasi desa secara lengkap sebagai sarana informasi, referensi pembangunan serta dapat menjadi pertimbangan dalam pengambilan kebijakan.',
+                'manfaat' => 'Tersedianya data desa yang akurat dan terstruktur untuk mendukung perencanaan pembangunan desa.',
+                'target' => 'Pemerintah Desa & Masyarakat',
+                'output' => 'Infografis & Portal Web Desa',
+                'status' => 'ongoing',
+                'progress' => 90,
+                'icon' => '💻',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Pembuatan Palang petunjuk jalan kantor desa',
+                'kategori' => 'Pendidikan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan dan pemasangan papan informasi petunjuk jalan menuju kantor desa talang marap. Sasaran program adalah pemerintah desa Talang Marap.',
+                'tujuan' => 'Memberikan informasi kepada masyarakat terkait letak kantor desa Talang Marap.',
+                'manfaat' => 'Mempermudah masyarakat untuk mengetahui letak kantor desa talang marap.',
+                'target' => 'Masyarakat & Pengunjung Desa',
+                'output' => 'Papan petunjuk jalan',
+                'status' => 'ongoing',
+                'progress' => 85,
+                'icon' => '📍',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Pembuatan Spanduk Pentingnya Mengelola Sampah dengan Benar',
+                'kategori' => 'Lingkungan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan spanduk edukatif mengenai pengelolaan sampah yang dipasang di lokasi strategis desa. Sasaran program adalah seluruh masyarakat Desa Talang Marap.',
+                'tujuan' => 'Menyampaikan informasi dan mengajak masyarakat untuk menerapkan pengelolaan sampah yang baik dan benar.',
+                'manfaat' => 'Meningkatkan kesadaran masyarakat serta memperkuat kampanye peduli lingkungan di desa.',
+                'target' => 'Seluruh Masyarakat Desa',
+                'output' => 'Spanduk edukasi lingkungan',
+                'status' => 'ongoing',
+                'progress' => 70,
+                'icon' => '♻️',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Pembuatan Video Edukasi Cara Memilah Sampah Menjadi Hal yang Bermanfaat',
+                'kategori' => 'Lingkungan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan video yang berisi dokumentasi kegiatan KKN, edukasi pengelolaan sampah, dan pesan-pesan lingkungan. Sasaran program adalah masyarakat Desa Talang Marap dan masyarakat luas melalui media sosial.',
+                'tujuan' => 'Menyebarluaskan informasi mengenai pengelolaan sampah dan mendokumentasikan kegiatan KKN secara kreatif.',
+                'manfaat' => 'Menjadi media pembelajaran yang mudah diakses, menarik, dan dapat menjangkau audiens yang lebih luas.',
+                'target' => 'Masyarakat Desa & Publik',
+                'output' => 'Video edukasi sosial media',
+                'status' => 'ongoing',
+                'progress' => 60,
+                'icon' => '🎥',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Pembuatan Gapura Desa minim anggaran',
+                'kategori' => 'Lingkungan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan gapura desa. Sasaran program adalah masyarakat dan karang taruna Desa Talang Marap.',
+                'tujuan' => 'Adanya gapura desa talang marap sebagai penanda perbatasan dengan desa lain dan telah masuk wilayah desa talang marap.',
+                'manfaat' => 'Untuk mengetahui batas wilayah desa.',
+                'target' => 'Masyarakat & Karang Taruna',
+                'output' => 'Gapura batas wilayah',
+                'status' => 'ongoing',
+                'progress' => 50,
+                'icon' => '🚧',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Inovasi Kreatif Penebaran Pupuk Pertanian berbahan pipa',
+                'kategori' => 'Pertanian',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan inovasi media penebaran pupuk pertanian menggunakan pipa untuk memudahkan petani saat menebarkan pupuk pada tanaman pertanian.',
+                'tujuan' => 'Memudahkan petani dalam penebaran pupuk pertanian agar lebih efisien.',
+                'manfaat' => 'Penebaran pupuk menjadi lebih efisien and dapat digunakan dalam jangka panjang.',
+                'target' => 'Petani Desa Talang Marap',
+                'output' => 'Alat penebar pupuk pipa',
+                'status' => 'planned',
+                'progress' => 0,
+                'icon' => '🌾',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Rocket Stove dan Bank Sampah',
+                'kategori' => 'Lingkungan',
+                'jenis' => 'Program Kerja',
+                'deskripsi' => 'Pembuatan tempat pembakaran sampah minim asap.',
+                'tujuan' => 'Pengelolaan tempat pembuangan akhir sampah agar tidak menumpuk dan mencemari lingkungan.',
+                'manfaat' => 'Sampah tidak menumpuk dan pencemaran air akibat sampah dapat berkurang.',
+                'target' => 'Masyarakat Desa',
+                'output' => 'Tungku pembakaran minim asap',
+                'status' => 'planned',
+                'progress' => 0,
+                'icon' => '🪵',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Kegiatan
+            [
+                'nama' => 'Gotong Royong',
+                'kategori' => 'Lingkungan',
+                'jenis' => 'Kegiatan',
+                'deskripsi' => 'Kegiatan kerja bakti bersama masyarakat untuk membersihkan lingkungan Desa Talang Marap. Sasaran program adalah seluruh warga desa, perangkat desa, dan mahasiswa KKN.',
+                'tujuan' => 'Meningkatkan kebersihan lingkungan serta memperkuat semangat kebersamaan dan gotong royong masyarakat.',
+                'manfaat' => 'Lingkungan menjadi lebih bersih, sehat, dan nyaman serta mempererat hubungan sosial antarwarga.',
+                'target' => 'Lingkungan Desa & Warga',
+                'output' => 'Kebersihan & kebersamaan desa',
+                'status' => 'ongoing',
+                'progress' => 40,
+                'icon' => '🤝',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nama' => 'Senam Sehat Bersama Masyarakat',
+                'kategori' => 'Kesehatan',
+                'jenis' => 'Kegiatan',
+                'deskripsi' => 'Kegiatan olahraga bersama yang melibatkan masyarakat dan mahasiswa KKN. Sasaran program adalah seluruh warga Desa Talang Marap.',
+                'tujuan' => 'Meningkatkan kesehatan fisik masyarakat dan mempererat hubungan sosial antara mahasiswa KKN dan warga.',
+                'manfaat' => 'Masyarakat menjadi lebih sehat, aktif, dan terjalin hubungan yang harmonis antarwarga serta mahasiswa KKN.',
+                'target' => 'Seluruh Warga Desa',
+                'output' => 'Kebugaran & keakraban warga',
+                'status' => 'ongoing',
+                'progress' => 50,
+                'icon' => '🏃‍♂️',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
+
         // Dokumen
         Dokumen::insert([
             ['nama'=>'RPJMDes 2020-2025','kategori'=>'Perencanaan','tanggal'=>'2020-01-15','ukuran'=>'2.4 MB','tipe'=>'PDF','url'=>null,'created_at'=>now(),'updated_at'=>now()],
@@ -142,18 +334,16 @@ class DatabaseSeeder extends Seeder
 
         // Anggota KKN
         AnggotaKkn::insert([
-            ['nama'=>'Muhammad Rizky Fauzi','prodi'=>'Teknik Informatika','fakultas'=>'Teknik','posisi'=>'Ketua','foto'=>'https://ui-avatars.com/api/?name=Muhammad+Rizky&background=2E7D32&color=fff&size=200','nim'=>'G1A021001','created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Sari Dewi Permata','prodi'=>'Ilmu Hukum','fakultas'=>'Hukum','posisi'=>'Sekretaris','foto'=>'https://ui-avatars.com/api/?name=Sari+Dewi&background=43A047&color=fff&size=200','nim'=>'G1A021002','created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Ahmad Faisal Rahman','prodi'=>'Agribisnis','fakultas'=>'Pertanian','posisi'=>'Bendahara','foto'=>'https://ui-avatars.com/api/?name=Ahmad+Faisal&background=66BB6A&color=fff&size=200','nim'=>'G1A021003','created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Putri Anggraini','prodi'=>'Kesehatan Masyarakat','fakultas'=>'Kedokteran','posisi'=>'Anggota','foto'=>'https://ui-avatars.com/api/?name=Putri+Anggraini&background=81C784&color=fff&size=200','nim'=>'G1A021004','created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Bima Sakti Pratama','prodi'=>'Ekonomi Pembangunan','fakultas'=>'Ekonomi','posisi'=>'Anggota','foto'=>'https://ui-avatars.com/api/?name=Bima+Sakti&background=2E7D32&color=fff&size=200','nim'=>'G1A021005','created_at'=>now(),'updated_at'=>now()],
-        ]);
-
-        // Bank Sampah Nasabah
-        BankSampahNasabah::insert([
-            ['nama'=>'Bu Sari','nik'=>'1234567890','alamat'=>'Dusun I','no_hp'=>'081111111111','poin'=>2400,'aktif'=>true,'created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Pak Hendra','nik'=>'1234567891','alamat'=>'Dusun II','no_hp'=>'081111111112','poin'=>1950,'aktif'=>true,'created_at'=>now(),'updated_at'=>now()],
-            ['nama'=>'Bu Dewi','nik'=>'1234567892','alamat'=>'Dusun I','no_hp'=>'081111111113','poin'=>1800,'aktif'=>true,'created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Muhammad Rizky Fauzi','prodi'=>'Teknik Informatika','fakultas'=>'Teknik','posisi'=>'Ketua','foto'=>'https://ui-avatars.com/api/?name=Muhammad+Rizky&background=2E7D32&color=fff&size=200','nim'=>'G1A021001','instagram'=>'rizky_fauzi','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Sari Dewi Permata','prodi'=>'Ilmu Hukum','fakultas'=>'Hukum','posisi'=>'Sekretaris','foto'=>'https://ui-avatars.com/api/?name=Sari+Dewi&background=43A047&color=fff&size=200','nim'=>'G1A021002','instagram'=>'saridewi.p','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Ahmad Faisal Rahman','prodi'=>'Agribisnis','fakultas'=>'Pertanian','posisi'=>'Bendahara','foto'=>'https://ui-avatars.com/api/?name=Ahmad+Faisal&background=66BB6A&color=fff&size=200','nim'=>'G1A021003','instagram'=>'ahmad_faisal','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Putri Anggraini','prodi'=>'Kesehatan Masyarakat','fakultas'=>'Kedokteran','posisi'=>'Bidang Kesehatan','foto'=>'https://ui-avatars.com/api/?name=Putri+Anggraini&background=81C784&color=fff&size=200','nim'=>'G1A021004','instagram'=>'putri_anggrn','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Bima Sakti Pratama','prodi'=>'Ekonomi Pembangunan','fakultas'=>'Ekonomi','posisi'=>'Bidang Ekonomi','foto'=>'https://ui-avatars.com/api/?name=Bima+Sakti&background=2E7D32&color=fff&size=200','nim'=>'G1A021005','instagram'=>'bima_sakti','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Rina Marlina','prodi'=>'Ilmu Komunikasi','fakultas'=>'FISIP','posisi'=>'Humas','foto'=>'https://ui-avatars.com/api/?name=Rina+Marlina&background=43A047&color=fff&size=200','nim'=>'G1A021006','instagram'=>'rina_marln','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Doni Setiawan','prodi'=>'Teknik Sipil','fakultas'=>'Teknik','posisi'=>'Perlengkapan','foto'=>'https://ui-avatars.com/api/?name=Doni+Setiawan&background=66BB6A&color=fff&size=200','nim'=>'G1A021007','instagram'=>'doni_setiawan','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Yesi Rahayu','prodi'=>'Pendidikan Biologi','fakultas'=>'FKIP','posisi'=>'Bidang Pendidikan','foto'=>'https://ui-avatars.com/api/?name=Yesi+Rahayu&background=81C784&color=fff&size=200','nim'=>'G1A021008','instagram'=>'yesi_rhy','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Fajar Nugroho','prodi'=>'Manajemen','fakultas'=>'Ekonomi','posisi'=>'Acara','foto'=>'https://ui-avatars.com/api/?name=Fajar+Nugroho&background=2E7D32&color=fff&size=200','nim'=>'G1A021009','instagram'=>'fajar_nugroho','created_at'=>now(),'updated_at'=>now()],
+            ['nama'=>'Layla Safitri','prodi'=>'Ilmu Gizi','fakultas'=>'Kedokteran','posisi'=>'Konsumsi','foto'=>'https://ui-avatars.com/api/?name=Layla+Safitri&background=43A047&color=fff&size=200','nim'=>'G1A021010','instagram'=>'layla_sftr','created_at'=>now(),'updated_at'=>now()],
         ]);
     }
 }
